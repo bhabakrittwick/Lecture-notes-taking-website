@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %} New Chapter | LinuxEasy {% endblock %}
+
+{% block body %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+    <strong>
+        {% if 'success' == category %}
+        Success!
+        {% endif %}
+        {% if 'danger' == category %}
+        Error!
+        {% endif %}
+    </strong>
+    {{message}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<div class="container my-4">
+    <form action="{{url_for('newchapter')}}" method="POST">
+        <div class="form-group">
+            <label for="chapter_name">Name of the Chapter</label>
+            <input type="text" class="form-control" id="chapter_name" name="chapter_name" placeholder="Lesson Name">
+        </div>
+        <div class="form-group">
+            <label for="slno">Serial No. of the Chapter</label>
+            <input type="number" class="form-control" id="slno" name="slno" value="{{slno}}">
+        </div>
+
+        <!-- <button type="submit" class="btn btn-primary mt-4">Add Chapter</button> -->
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary my-4" data-toggle="modal" data-target="#addChpater">
+            Add Chapter
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="addChpater" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Authorization</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Confirm that you are authorized person.
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" name="password" class="form-control" id="password"
+                                placeholder="Enter Password">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+                        <button type="submit" class="btn btn-primary">Add Chapter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+{% endblock %}

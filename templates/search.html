@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %} Chapter | LinuxEasy {% endblock %}
+
+{% block body %}
+
+    {% if noOfResult > 0 %}
+    <p class="h2 text-center my-3">{{noOfResult}} search result for "{{search_term}}"</p>
+    {% else %}
+    <p class="h2 text-center my-3">No result found for "{{search_term}}"</p>
+    {% endif %}
+    <div class="container my-4">
+        <ul>
+            {% for chapter in chapters %}
+            <li class="link-text"><a href="{{url_for('chapter', id=chapter.id)}}">{{chapter.name}}</a></li>
+            {% endfor %}
+            {% for lesson in lessons %}
+            <li class="link-text"><a href="{{url_for('chapter', id=lesson[1])}}#{{lesson[2] | replace(' ', '')}}" target="_blank">{{lesson[3]}} - {{lesson[2]}}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% endblock %}

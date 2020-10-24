@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %} Update Lesson | LinuxEasy {% endblock %}
+
+{% block body %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+    <strong>
+        {% if 'success' == category %}
+        Success!
+        {% endif %}
+        {% if 'danger' == category %}
+        Error!
+        {% endif %}
+    </strong>
+    {{message}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="container my-4">
+    <form action="{{url_for('updateLesson', id=lesson.id)}}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="lesson_name">Name of the Lesson</label>
+            {% if edited_name %}
+            <input type="text" class="form-control" id="lesson_name" name="lesson_name" value="{{edited_name}}">
+            {% else %}
+            <input type="text" class="form-control" id="lesson_name" name="lesson_name" value="{{lesson.name}}">
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="slno">Serial Number of the Lesson</label>
+            {% if edited_slno %}
+            <input type="number" class="form-control" id="slno" name="slno" value="{{edited_slno}}">
+            {% else %}
+            <input type="number" class="form-control" id="slno" name="slno" value="{{lesson.slno}}">
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="lesson">Lesson</label>
+            {% if edited_lesson %}
+            <textarea class="form-control" name="lesson" id="lesson" rows="3">{{edited_lesson}}</textarea>
+            {% else %}
+            <textarea class="form-control" name="lesson" id="lesson" rows="3">{{lesson.lesson}}</textarea>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="image">Add Image</label>
+            <input type="file" name="image" class="form-control-file" id="image">
+        </div>
+        <br>
+        {% if images.count() > 0 %}
+        <label for="" class="lead">Remove Images</label>
+        {% endif %}
+        <div class="row">
+            {% for image in images %}
+            <div class="col-3 m-2 border">
+
+                <div class="form-check">
+                    <input class="form-check-input" name="rmv_imgs" type="checkbox" value="{{image.id}}"
+                        id="image{{loop.index}}">
+                    <label class="form-check-label" for="image{{loop.index}}">
+                        <img src="/static/img/{{image.image_path}}" width="200px" height="200px" alt="">
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <button type="button" class="btn btn-primary my-4" data-toggle="modal" data-target="#updateModal">
+            Update Lesson
+        </button>
+        <!-- Modal -->
+        <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Authorization</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Confirm that you are authorized to update the lesson.
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" name="password" class="form-control" id="password"
+                                placeholder="Enter Password">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-danger my-4" data-toggle="modal" data-target="#deleteModal">
+        Delete Lesson
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{url_for('deleteLesson', id=lesson.id)}}" method="POST">
+                    <div class="modal-body">
+                        Sure to delete the lesson? Confirm that you are authorized to delete the lesson.
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" name="password" class="form-control" id="password"
+                                placeholder="Enter Password">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

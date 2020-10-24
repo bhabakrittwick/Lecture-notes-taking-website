@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %} LinuxEasy {% endblock %}
+
+{% block body %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                    <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+                        <strong>
+                            {% if 'success' == category %}
+                                Success!
+                            {% endif %}
+                            {% if 'danger' == category %}
+                                Error!
+                            {% endif %}
+                        </strong>
+                        {{message}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+<div class="container my-4">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Sl No.</th>
+                <th scope="col">Chapter</th>
+                <th scope="col">Visit</th>
+                <th scope="col">Update Chapter</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for chapter in chapters %}
+                <tr>
+                    <th scope="row">{{chapter.slno}}</th>
+                    <td>{{chapter.name}}</td>
+                    <td><a href="{{url_for('chapter', id=chapter.id)}}">Visit</a></td>
+                    <td><a href="{{url_for('updateChapter', id=chapter.id)}}">Update</a></td>
+                </tr>
+            {% endfor %}
+            
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

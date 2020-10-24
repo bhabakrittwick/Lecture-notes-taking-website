@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %} Chapter | LinuxEasy {% endblock %}
+
+{% block body %}
+<button onclick="topFunction()" id="myBtn" class="btn btn-primary" title="Go to top">
+    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-capslock-fill" fill="currentColor"
+        xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd"
+            d="M7.27 1.047a1 1 0 0 1 1.46 0l6.345 6.77c.6.638.146 1.683-.73 1.683H11.5v1a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-1H1.654C.78 9.5.326 8.455.924 7.816L7.27 1.047zM4.5 13.5a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-1z" />
+    </svg>
+</button>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{category}} alert-dismissible fade show container my-4" role="alert">
+    <strong>
+        {% if 'success' == category %}
+        Success!
+        {% endif %}
+        {% if 'danger' == category %}
+        Error!
+        {% endif %}
+    </strong>
+    {{message}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<div class="container my-4">
+    <a href="{{url_for('newlesson', chapter=chapter)}}" class="btn btn-primary">New Lesson</a>
+    <div class="display-4 text-center my-3"><b>{{chapterName}}</b></div>
+    <div class="row">
+        <div class="my-3 col-lg-6 float-left col-sm-10">
+            <ul class="list-group">
+                <li class="list-group-item text-center">Contents</li>
+                {% for lesson in lessons %}
+                <li class="list-group-item"><a href="#{{lesson.name | replace(' ', '')}}">{{lesson.name}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+
+    {% for lesson in lessons %}
+    {% if allImages[lesson.id] %}
+    <div class="row my-4">
+        <div class="col-10 col-md-12 mt-5 p-2 mx-auto">
+            <span class="h2" id="{{lesson.name | replace(' ', '')}}">{{lesson.name}}</span>
+            <span class="float-right"><a href="{{url_for('updateLesson', id=lesson.id)}}">Update</a></span>
+        </div>
+        <div class="clearfix p-0 col-10 col-md-12   mx-auto">
+            <div class="float-right col-sm-12 col-md-6 border p-0">
+
+
+                <div id="carouselExampleControls{{loop.index}}" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for img in allImages[lesson.id] %}
+                        <div class="carousel-item {% if loop.index==1 %} active {% endif %}">
+                            <img src="/static/img/{{img.image_path}}" class="d-block w-100" style="max-height: 400px;"
+                                alt="">
+                            <button type="button" style="display: block; margin: auto;" class="btn btn-secondary"
+                                data-toggle="modal" data-target="#exampleModalCenter{{img.id}}">
+                                <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-arrows-angle-expand"
+                                    fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707z" />
+                                </svg>
+                            </button>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                    <a class="carousel-control-prev" href="#carouselExampleControls{{loop.index}}" role="button"
+                        data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExampleControls{{loop.index}}" role="button"
+                        data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+
+                {% for img in allImages[lesson.id] %}
+                <div class="modal fade" id="exampleModalCenter{{img.id}}" tabindex="-1" role="dialog"
+                    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">
+                                        <svg width="1em" height="1em" viewBox="0 0 16 16"
+                                            class="bi bi-arrows-angle-contract" fill="currentColor"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M.172 15.828a.5.5 0 0 0 .707 0l4.096-4.096V14.5a.5.5 0 1 0 1 0v-3.975a.5.5 0 0 0-.5-.5H1.5a.5.5 0 0 0 0 1h2.768L.172 15.121a.5.5 0 0 0 0 .707zM15.828.172a.5.5 0 0 0-.707 0l-4.096 4.096V1.5a.5.5 0 1 0-1 0v3.975a.5.5 0 0 0 .5.5H14.5a.5.5 0 0 0 0-1h-2.768L15.828.879a.5.5 0 0 0 0-.707z" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <img src="/static/img/{{img.image_path}}" alt=""
+                                    style="max-width: 100%; max-height: 100%;; margin: auto; display: block;">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+
+
+
+            </div>
+            <div style="white-space: pre-line; font-size: larger;" class="border bg-light p-3">
+                {{lesson.lesson}}
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="row my-4">
+        <div class="col-10 col-md-12 mt-5 p-2 mx-auto">
+            <span class="h2" id="{{lesson.name | replace(' ', '')}}">{{lesson.name}}</span>
+            <span class="float-right"><a href="{{url_for('updateLesson', id=lesson.id)}}">Update</a></span>
+        </div>
+        <div style="white-space: pre-line; font-size: larger;"
+            class="col-lg-12 bg-light col-md-12 col-sm-10 col-10 mx-auto border p-3">
+            {{lesson.lesson}}
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+{% endblock %}
