@@ -1,1 +1,2 @@
-/home/myusername/.virtualenvs/myvirtualenv
+Add this to virtualenv: /home/myusername/.virtualenvs/myvirtualenv
+Edit config.json file path in flask_app.py: /home/myusername/mysite/
