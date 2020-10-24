@@ -1,4 +1,4 @@
 Add this to virtualenv: /home/myusername/.virtualenvs/myvirtualenv
 Edit config.json file path in flask_app.py: /home/myusername/mysite/
-newline
-newline 2
+cache credientials: git config credential.helper store
+edit data.sqlite name in flask_app.py
