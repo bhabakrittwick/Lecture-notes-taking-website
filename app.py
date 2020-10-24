@@ -319,5 +319,5 @@ def search():
 def about():
     return render_template('about.html', courseName=courseName, courseAbout=courseAbout)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# if __name__ == "__main__":
+#     app.run(debug=True)
