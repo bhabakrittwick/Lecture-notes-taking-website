@@ -2,7 +2,7 @@ from flask import Flask, url_for, redirect, request, render_template, flash, cur
 import os
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-import time
+import time, json
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -11,6 +11,13 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'super secret key'
+
+with open('./templates/config.json', 'r') as c:
+    params = json.load(c)["params"]
+courseName = params['course_name']
+courseAbout = params['about']
+enterpasskey = params['password']
+
 
 db = SQLAlchemy(app)
 Migrate(app, db)
@@ -57,7 +64,7 @@ class Images(db.Model):
 @app.route('/')
 def home():
     chapters = Chapters.query.order_by(Chapters.slno).all()
-    return render_template('index.html', chapters=chapters)
+    return render_template('index.html', chapters=chapters, courseName=courseName, courseAbout=courseAbout)
 
 @app.route('/chapter/<int:id>')
 def chapter(id):
@@ -68,7 +75,7 @@ def chapter(id):
         if images.count()>0:
             allImages[lesson.id] = images
     chapter = Chapters.query.get(id)
-    return render_template('lesson.html', lessons=lessons, allImages=allImages, chapter=id, chapterName=chapter.name)
+    return render_template('lesson.html', lessons=lessons, allImages=allImages, chapter=id, chapterName=chapter.name, courseName=courseName, courseAbout=courseAbout)
 
 @app.route('/newchapter', methods=['GET', 'POST'])
 def newchapter():
@@ -82,7 +89,7 @@ def newchapter():
             newslno = newslno + 1
         except:
             newslno = -1
-        return render_template('addChapter.html', slno=newslno)
+        return render_template('addChapter.html', slno=newslno, courseName=courseName, courseAbout=courseAbout)
     else:
         chapter_name = request.form['chapter_name']
         slno = request.form['slno']
@@ -90,7 +97,7 @@ def newchapter():
         if chapter_name is None or chapter_name=='':
             flash('Chapter name can not be blank', 'danger')
             return redirect(url_for('newchapter'))
-        if password!='enterpasskey':
+        if password!=enterpasskey:
             flash('You are not authorized to add a chapter', 'danger')
             return redirect(url_for('newchapter'))
         chapter = Chapters(chapter_name, slno)
@@ -112,18 +119,18 @@ def newlesson(chapter):
         except:
             newslno = -1
         
-        return render_template('addLesson.html', chapter=chapter, slno=newslno)
+        return render_template('addLesson.html', chapter=chapter, slno=newslno, courseName=courseName, courseAbout=courseAbout)
     else:
         lesson_name = request.form['lesson_name']
         slno = request.form['slno']
         lesson = request.form['lesson']
         password = request.form['password']
-        if password!='enterpasskey':
+        if password!=enterpasskey:
             flash('You are not authorized to add a lesson', 'danger')
-            return render_template('addLesson.html', name=lesson_name, slno=slno, lesson=lesson, chapter=chapter)
+            return render_template('addLesson.html', name=lesson_name, slno=slno, lesson=lesson, chapter=chapter, courseName=courseName, courseAbout=courseAbout)
         if lesson_name is None or lesson_name=='':
             flash('Lesson Name cannot be blank', 'danger')
-            return render_template('addLesson.html', name=lesson_name, slno=slno, lesson=lesson, chapter=chapter)
+            return render_template('addLesson.html', name=lesson_name, slno=slno, lesson=lesson, chapter=chapter, courseName=courseName, courseAbout=courseAbout)
         newLesson = Lessons(lesson_name, chapter, slno, lesson)
         db.session.add(newLesson)
         db.session.commit()
@@ -150,10 +157,10 @@ def newlesson(chapter):
 def updateChapter(id):
     chapter = Chapters.query.get(id)
     if request.method=='GET':
-        return render_template('updateChapter.html', chapter=chapter)
+        return render_template('updateChapter.html', chapter=chapter, courseName=courseName, courseAbout=courseAbout)
     else:
         password = request.form['password']
-        if password!='enterpasskey':
+        if password!=enterpasskey:
             flash('You can not modify the chapter', 'danger')
             return redirect(url_for('chapter', id=id))
         chapter_name = request.form['chapter_name']
@@ -164,29 +171,29 @@ def updateChapter(id):
                 return redirect(url_for('updateChapter', id=id))
             chapter.name = chapter_name
             chapter.slno = slno
-            print('thisflsddkfj ')
+            
             db.session.add(chapter)
             db.session.commit()
             flash('Chapter Updated Successfully', 'success')
             return redirect(url_for('chapter', id=chapter.id))
         except:
             flash(('Chapter cannot be updated due to some error', 'danger'))
-            return render_template('updateChapter.html', chapter=chapter)
+            return render_template('updateChapter.html', chapter=chapter, courseName=courseName, courseAbout=courseAbout)
 
 @app.route('/update/lesson/<int:id>', methods=['GET', 'POST'])
 def updateLesson(id):
     lesson = Lessons.query.get(id)
     images = Images.query.filter_by(lesson=lesson.id)
     if request.method=='GET':
-        return render_template('updateLesson.html', lesson=lesson, images=images)
+        return render_template('updateLesson.html', lesson=lesson, images=images, courseName=courseName, courseAbout=courseAbout)
     else:
         password = request.form['password']        
         lesson_name = request.form['lesson_name']
         lesson_body = request.form['lesson']
         lesson_slno = request.form['slno']
-        if password!='enterpasskey':
+        if password!=enterpasskey:
             flash('You can not modify the lesson', 'danger')
-            return render_template('updateLesson.html', lesson=lesson, images=images, edited_name=lesson_name, edited_lesson=lesson_body)
+            return render_template('updateLesson.html', lesson=lesson, images=images, edited_name=lesson_name, edited_lesson=lesson_body, courseName=courseName, courseAbout=courseAbout)
         if not lesson_name=='' or not lesson=='':
             lesson.name = lesson_name
             lesson.lesson = lesson_body
@@ -196,7 +203,7 @@ def updateLesson(id):
             flash('Lesson updated successful', 'success')
         else:
             flash('Lesson Name or Lesson cannot be blank', 'danger')
-            return render_template('updateLesson.html', lesson=lesson, images=images, edited_name=lesson_name, edited_lesson=lesson_body)
+            return render_template('updateLesson.html', lesson=lesson, images=images, edited_name=lesson_name, edited_lesson=lesson_body, courseName=courseName, courseAbout=courseAbout)
         image = request.files['image']
         try:
             if image:
@@ -241,7 +248,7 @@ def deleteLesson(id):
             password = request.form['password']
             lesson = Lessons.query.get(id)
             images = Images.query.filter_by(lesson=id)
-            if password!='enterpasskey':
+            if password!=enterpasskey:
                 flash('You can not delete the lesson', 'danger')
                 return redirect(url_for('chapter', id=lesson.chapter))
             for img in images:
@@ -261,7 +268,7 @@ def deleteChapter(id):
     if request.method=='POST':
         try:
             password = request.form['password']
-            if password!='enterpasskey':
+            if password!=enterpasskey:
                 flash('You can not delete the chapter', 'danger')
                 return redirect(url_for('chapter', id=id))
             chapter = Chapters.query.get(id)
@@ -302,11 +309,15 @@ def search():
     for lesson in lessons:
         chapter_name = Chapters.query.get(lesson.chapter).name
         temp.append([lesson.id, lesson.chapter, lesson.name, chapter_name])
-        print(temp)
+        
     chapters = list(search_results_chapters)
     lessons = temp
     noOfResult = len(lessons)+len(chapters)
-    return render_template('search.html', noOfResult=noOfResult, lessons=lessons, chapters=chapters, search_term = search_term)
+    return render_template('search.html', noOfResult=noOfResult, lessons=lessons, chapters=chapters, search_term = search_term, courseName=courseName, courseAbout=courseAbout)
+
+@app.route('/about')
+def about():
+    return render_template('about.html', courseName=courseName, courseAbout=courseAbout)
 
 if __name__ == "__main__":
     app.run(debug=True)
