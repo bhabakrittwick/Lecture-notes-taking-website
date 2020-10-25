@@ -48,11 +48,13 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{url_for('newchapter')}}">Add New Chapter</a>
                 </li>
-		
-		<li class="nav-item">
+
+		        <li class="nav-item">
                     <a class="nav-link" href="{{url_for('about')}}">About</a>
                 </li>
-
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('updatedb')}}">Update DB</a>
+                </li>
 
             </ul>
             <form class="form-inline my-2 my-lg-0" action="{{url_for('search')}}" method="GET">
@@ -63,7 +65,7 @@
     </nav>
     {% block body %} {% endblock %}
 
-    
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

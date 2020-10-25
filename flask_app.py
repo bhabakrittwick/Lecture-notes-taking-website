@@ -322,5 +322,22 @@ def search():
 def about():
     return render_template('about.html', courseName=courseName, courseAbout=courseAbout)
 
+@app.route('/updatedb')
+def updatedb():
+    from datetime import datetime
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    try:
+        os.chdir('/home/linuxeasy/mysite/')
+        os.system('git add linuxeasy.sqlite')
+        os.system('git add static/linuxeasyimg/')
+        os.system(f'git commit -m "new update{dt_string}"')
+        os.system('git push')
+        flash('Update successful', 'success')
+    except:
+        flash('Update failed', 'danger')
+
+    return redirect(url_for('home'))
+
 # if __name__ == "__main__":
 #     app.run(debug=True)
