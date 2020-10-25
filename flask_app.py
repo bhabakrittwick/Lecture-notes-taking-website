@@ -23,7 +23,7 @@ enterpasskey = params['password']
 db = SQLAlchemy(app)
 Migrate(app, db)
 
-image_folder_path = os.path.join(current_app.root_path,'static', 'linuxeasyimg')
+
 
 class Chapters(db.Model):
     __tablename__ = 'chapters'
@@ -144,7 +144,7 @@ def newlesson(chapter):
         try:
             if image:
                 storage_filename = str(time.time()).replace('.','')+'.'+image.filename.split('.')[-1]
-                filepath = os.path.join(image_folder_path, storage_filename)
+                filepath = os.path.join(current_app.root_path,'static', domainName+'img', storage_filename)
                 image.save(filepath)
                 image = Images(storage_filename, lesson_id)
                 db.session.add(image)
@@ -211,7 +211,7 @@ def updateLesson(id):
         try:
             if image:
                 storage_filename = str(time.time()).replace('.','')+'.'+image.filename.split('.')[-1]
-                filepath = os.path.join(image_folder_path, storage_filename)
+                filepath = os.path.join(current_app.root_path,'static', domainName+'img', storage_filename)
                 image.save(filepath)
                 image = Images(storage_filename, lesson.id)
                 db.session.add(image)
@@ -227,7 +227,7 @@ def updateLesson(id):
         for rm_img in remove_images:
             img = Images.query.get(rm_img)
             try:
-                filepath = os.path.join(image_folder_path, img.image_path)
+                filepath = os.path.join(current_app.root_path,'static', domainName+'img', img.image_path)
                 db.session.delete(img)
                 db.session.commit()
                 os.chmod(filepath, 777)
@@ -255,7 +255,7 @@ def deleteLesson(id):
                 flash('You can not delete the lesson', 'danger')
                 return redirect(url_for('chapter', id=lesson.chapter))
             for img in images:
-                filepath = os.path.join(image_folder_path, img.image_path)
+                filepath = os.path.join(current_app.root_path,'static', domainName+'img', img.image_path)
                 os.chmod(filepath, 777)
                 os.remove(filepath)
 
@@ -279,7 +279,7 @@ def deleteChapter(id):
             for lesson in lessons:
                 images = Images.query.filter_by(lesson=lesson.id)
                 for image in images:
-                    filepath = os.path.join(image_folder_path, image.image_path)
+                    filepath = os.path.join(current_app.root_path,'static', domainName+'img', image.image_path)
                     os.chmod(filepath, 777)
                     os.remove(filepath)
             db.session.delete(chapter)
